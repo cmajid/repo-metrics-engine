@@ -2,7 +2,7 @@ export class RepositoryOwnerDto {
   login: string;
   id: number;
   avatar_url: string;
-  html_url: string;
+  url: string;
   type: string;
 }
 
@@ -11,7 +11,7 @@ export class RepositoryDto {
   name: string;
   full_name: string;
   owner: RepositoryOwnerDto;
-  html_url: string;
+  url: string;
   description: string;
   stars_count: number;
   watchers_count: number;
