@@ -5,7 +5,6 @@ import { SearchRepositoriesDto } from 'src/score/dto/search-repositories.dto';
 import { AxiosError, AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
 import { GithubRepoItemDto } from './dto/github-repsonse.dto';
-import { HttpException } from '@nestjs/common';
 
 describe('GithubService', () => {
     let service: GithubService;
