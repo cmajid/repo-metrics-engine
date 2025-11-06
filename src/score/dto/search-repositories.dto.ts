@@ -18,10 +18,10 @@ export class SearchRepositoriesDto {
 
   @ApiPropertyOptional({
     description: 'Sort repositories',
-    enum: ['stars', 'forks', 'help-wanted-issues', 'updated'],
+    enum: ['stars', 'forks', 'updated'],
     example: 'stars',
   })
-  sort?: 'stars' | 'forks' | 'help-wanted-issues' | 'updated';
+  sort?: 'stars' | 'forks' | 'updated';
 
   @ApiPropertyOptional({
     description: 'Page number',
