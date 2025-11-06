@@ -40,7 +40,7 @@ export class SearchRepositoriesDto {
   @ApiPropertyOptional({
     description:
       'Filter by earliest created date in (YYYY-MM-DD) format. Only repositories created on or after this date will be returned.',
-    example: '2020-01-01',
+    example: '2017-02-04',
   })
   created_after?: string;
 }
