@@ -10,10 +10,12 @@ import {
   GithubRepoSearchResponseDto,
 } from './dto/github-repsonse.dto';
 import { ResponseDto } from 'src/score/dto/reponse.dto';
+import { ScoreCalculator } from 'src/libs/score-calculator';
 
 @Injectable()
 export class GithubService {
   private readonly GITHUB_API_URL = 'https://api.github.com';
+  private readonly scoreCalculator = new ScoreCalculator();
   constructor(private readonly httpService: HttpService) { }
 
   async searchRepositoriesWithScores(
@@ -52,7 +54,6 @@ export class GithubService {
       }),
     );
 
-    // Transform response to only include essential fields
     const transformedItems = response.data.items.map(
       (item: GithubRepoItemDto) => {
         return {
@@ -75,31 +76,15 @@ export class GithubService {
           created_at: item.created_at,
           updated_at: item.updated_at,
 
-          popularity_score: this.calculatePopularityScore(item),
+          popularity_score: this.scoreCalculator.calculatePopularityScore(
+            item.stargazers_count,
+            item.forks_count,
+            item.updated_at
+          ),
         } as RepositoryDto;
       },
     );
     return { response, transformedItems };
-  }
-
-  calculatePopularityScore(repository: GithubRepoItemDto): number {
-    // Stars: max 70 points (divide by 100, maximum at 70)
-    const starPoints = Math.min(repository.stargazers_count / 100, 70);
-
-    // Forks: max 20 points (divide by 50, maximum at 20)
-    const forkPoints = Math.min(repository.forks_count / 50, 20);
-
-    // Calculate days since last update
-    const daysSinceUpdate = Math.floor(
-      (Date.now() - new Date(repository.updated_at).getTime()) /
-      (1000 * 60 * 60 * 24),
-    );
-
-    // Recent activity: +10 points if updated in last 30 days
-    const recentBonus = daysSinceUpdate < 30 ? 10 : 0;
-
-    // Total score: max 100 points
-    return Math.round(starPoints + forkPoints + recentBonus);
   }
 
   private buildQuery(
