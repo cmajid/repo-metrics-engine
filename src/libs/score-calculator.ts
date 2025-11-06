@@ -1,4 +1,6 @@
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class ScoreCalculator {
     calculatePopularityScore(stars: number, forks: number, updated_at: string): number {
         // Stars: max 70 points (divide by 100, maximum at 70)

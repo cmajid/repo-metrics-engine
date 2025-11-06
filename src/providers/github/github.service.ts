@@ -15,8 +15,10 @@ import { ScoreCalculator } from 'src/libs/score-calculator';
 @Injectable()
 export class GithubService {
   private readonly GITHUB_API_URL = 'https://api.github.com';
-  private readonly scoreCalculator = new ScoreCalculator();
-  constructor(private readonly httpService: HttpService) { }
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly scoreCalculator: ScoreCalculator
+  ) { }
 
   async searchRepositoriesWithScores(
     searchDto: SearchRepositoriesDto,

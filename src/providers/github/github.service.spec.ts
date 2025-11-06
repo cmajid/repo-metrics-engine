@@ -5,6 +5,7 @@ import { SearchRepositoriesDto } from 'src/score/dto/search-repositories.dto';
 import { AxiosError, AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
 import { GithubRepoItemDto } from './dto/github-repsonse.dto';
+import { ScoreCalculator } from 'src/libs/score-calculator';
 
 describe('GithubService', () => {
     let service: GithubService;
@@ -44,6 +45,12 @@ describe('GithubService', () => {
                     provide: HttpService,
                     useValue: {
                         get: jest.fn(),
+                    },
+                },
+                {
+                    provide: ScoreCalculator,
+                    useValue: {
+                        calculatePopularityScore: jest.fn(),
                     },
                 },
             ],
