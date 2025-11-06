@@ -65,7 +65,6 @@ $ npm run test:cov
 ```json
 {
   "total_count": 139602,
-  "incomplete_results": false,
   "items": [
     {
       "id": 80945428,
