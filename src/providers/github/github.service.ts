@@ -3,30 +3,41 @@ import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import {
   RepositoryDto,
-  SearchRepositoriesResponseDto,
 } from 'src/score/dto/repository-response.dto';
 import { SearchRepositoriesDto } from 'src/score/dto/search-repositories.dto';
 import {
   GithubRepoItemDto,
   GithubRepoSearchResponseDto,
 } from './dto/github-repsonse.dto';
+import { ResponseDto } from 'src/score/dto/reponse.dto';
 
 @Injectable()
 export class GithubService {
   private readonly GITHUB_API_URL = 'https://api.github.com';
-  constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) { }
 
   async searchRepositoriesWithScores(
     searchDto: SearchRepositoriesDto,
-  ): Promise<SearchRepositoriesResponseDto> {
+  ): Promise<ResponseDto<RepositoryDto[]>> {
     const query = this.buildSearchQuery(searchDto);
     const params = new URLSearchParams();
     this.buildQuery(params, query, searchDto);
-    const { response, transformedItems } = await this.inqueryGithub(params);
-    return {
-      total_count: response.data.total_count,
-      items: transformedItems,
-    };
+    try {
+      const { response, transformedItems } = await this.inqueryGithub(params);
+      return {
+        total_count: response.data.total_count,
+        items: transformedItems,
+        success: true,
+      };
+    } catch (error) {
+      return {
+        total_count: 0,
+        items: [],
+        success: false,
+        error: error?.response?.data?.message,
+      };
+    }
+
   }
 
   private async inqueryGithub(params: URLSearchParams) {
@@ -81,7 +92,7 @@ export class GithubService {
     // Calculate days since last update
     const daysSinceUpdate = Math.floor(
       (Date.now() - new Date(repository.updated_at).getTime()) /
-        (1000 * 60 * 60 * 24),
+      (1000 * 60 * 60 * 24),
     );
 
     // Recent activity: +10 points if updated in last 30 days

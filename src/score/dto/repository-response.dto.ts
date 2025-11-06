@@ -21,8 +21,3 @@ export class RepositoryDto {
   updated_at: string;
   popularity_score?: number;
 }
-
-export class SearchRepositoriesResponseDto {
-  total_count: number;
-  items: RepositoryDto[];
-}

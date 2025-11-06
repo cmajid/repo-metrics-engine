@@ -2,9 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GithubService } from './github.service';
 import { HttpService } from '@nestjs/axios';
 import { SearchRepositoriesDto } from 'src/score/dto/search-repositories.dto';
-import { AxiosResponse } from 'axios';
-import { of } from 'rxjs';
+import { AxiosError, AxiosResponse } from 'axios';
+import { of, throwError } from 'rxjs';
 import { GithubRepoItemDto } from './dto/github-repsonse.dto';
+import { HttpException } from '@nestjs/common';
 
 describe('GithubService', () => {
     let service: GithubService;
@@ -59,6 +60,8 @@ describe('GithubService', () => {
 
     describe('searchRepositories', () => {
         it('should search repositories', async () => {
+
+            // Arrange
             const searchDto: SearchRepositoriesDto = {
                 q: 'nestjs',
             };
@@ -70,8 +73,12 @@ describe('GithubService', () => {
                 config: {} as any,
             };
             jest.spyOn(httpService, 'get').mockReturnValue(of(axiosResponse));
+
+            // Act
             const result = await service.searchRepositoriesWithScores(searchDto);
 
+            // Assert
+            expect(result.success).toBe(true);
             expect(result.total_count).toBe(1);
             expect(result.items).toHaveLength(1);
             expect(result.items[0].name).toBe('nest');
@@ -80,12 +87,13 @@ describe('GithubService', () => {
     });
 
     it('should search repositories with pagination parameters', async () => {
+
+        // Arrange
         const searchDto: SearchRepositoriesDto = {
             q: 'nestjs',
             per_page: 10,
             page: 2,
         };
-
         const axiosResponse: AxiosResponse = {
             data: mockGithubApiResponse,
             status: 200,
@@ -93,11 +101,12 @@ describe('GithubService', () => {
             headers: {},
             config: {} as any,
         };
-
         jest.spyOn(httpService, 'get').mockReturnValue(of(axiosResponse));
 
+        // Act
         await service.searchRepositoriesWithScores(searchDto);
 
+        // Assert
         expect(httpService.get).toHaveBeenCalledWith(
             expect.stringContaining('per_page=10'),
             expect.any(Object),
@@ -106,5 +115,33 @@ describe('GithubService', () => {
             expect.stringContaining('page=2'),
             expect.any(Object),
         );
+    });
+
+    it('should handle GitHub API errors with response', async () => {
+
+        // Arrange
+        const searchDto: SearchRepositoriesDto = {
+            q: 'nestjs',
+        };
+
+        const axiosError = {
+            response: {
+                data: { message: 'API rate limit exceeded' },
+                status: 403,
+            },
+        } as AxiosError;
+
+        jest
+            .spyOn(httpService, 'get')
+            .mockReturnValue(throwError(() => axiosError));
+
+
+        // Act
+        const result = await service.searchRepositoriesWithScores(searchDto);
+
+        // Assert
+        expect(result.success).toBe(false);
+        expect(result.error).toBe('API rate limit exceeded');
+        expect(result.total_count).toBe(0);
     });
 });
