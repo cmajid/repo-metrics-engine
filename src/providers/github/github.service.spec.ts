@@ -79,5 +79,32 @@ describe('GithubService', () => {
         });
     });
 
-    
+    it('should search repositories with pagination parameters', async () => {
+        const searchDto: SearchRepositoriesDto = {
+            q: 'nestjs',
+            per_page: 10,
+            page: 2,
+        };
+
+        const axiosResponse: AxiosResponse = {
+            data: mockGithubApiResponse,
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+            config: {} as any,
+        };
+
+        jest.spyOn(httpService, 'get').mockReturnValue(of(axiosResponse));
+
+        await service.searchRepositoriesWithScores(searchDto);
+
+        expect(httpService.get).toHaveBeenCalledWith(
+            expect.stringContaining('per_page=10'),
+            expect.any(Object),
+        );
+        expect(httpService.get).toHaveBeenCalledWith(
+            expect.stringContaining('page=2'),
+            expect.any(Object),
+        );
+    });
 });
