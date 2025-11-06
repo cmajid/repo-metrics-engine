@@ -4,6 +4,6 @@ import { GithubModule } from 'src/providers/github/github.module';
 
 @Module({
   imports: [GithubModule],
-  controllers: [ScoreController]
+  controllers: [ScoreController],
 })
-export class ScoreModule { }
+export class ScoreModule {}

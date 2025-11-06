@@ -17,6 +17,13 @@ export class SearchRepositoriesDto {
   per_page?: number;
 
   @ApiPropertyOptional({
+    description: 'Sort repositories',
+    enum: ['stars', 'forks', 'help-wanted-issues', 'updated'],
+    example: 'stars',
+  })
+  sort?: 'stars' | 'forks' | 'help-wanted-issues' | 'updated';
+
+  @ApiPropertyOptional({
     description: 'Page number',
     minimum: 1,
     example: 1,

@@ -5,21 +5,19 @@ import { SearchRepositoriesDto } from './dto/search-repositories.dto';
 import { ApiOperation } from '@nestjs/swagger';
 
 @Controller({
-    path: 'score',
-    version: '1',
+  path: 'score',
+  version: '1',
 })
 export class ScoreController {
+  constructor(private readonly githubService: GithubService) {}
 
-    constructor(private readonly githubService: GithubService) { }
-
-    @ApiOperation({
-        summary: 'Search GitHub repositories with popularity scores'
-    })
-    @Get('repositories')
-    async searchRepositoriesWithScores(
-        @Query() searchDto: SearchRepositoriesDto,
-    ): Promise<SearchRepositoriesResponseDto> {
-        return this.githubService.searchRepositoriesWithScores(searchDto);
-    }
-
+  @ApiOperation({
+    summary: 'Search GitHub repositories with popularity scores',
+  })
+  @Get('repositories')
+  async searchRepositoriesWithScores(
+    @Query() searchDto: SearchRepositoriesDto,
+  ): Promise<SearchRepositoriesResponseDto> {
+    return this.githubService.searchRepositoriesWithScores(searchDto);
+  }
 }
