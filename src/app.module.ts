@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { GithubModule } from './github/github.module';
+import { GithubModule } from './providers/github/github.module';
 
 @Module({
   imports: [GithubModule],
