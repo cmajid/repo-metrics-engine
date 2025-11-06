@@ -13,7 +13,7 @@ export class RepositoryDto {
   owner: RepositoryOwnerDto;
   html_url: string;
   description: string;
-  stargazers_count: number;
+  stars_count: number;
   watchers_count: number;
   forks_count: number;
   language: string;
@@ -24,6 +24,5 @@ export class RepositoryDto {
 
 export class SearchRepositoriesResponseDto {
   total_count: number;
-  incomplete_results: boolean;
   items: RepositoryDto[];
 }

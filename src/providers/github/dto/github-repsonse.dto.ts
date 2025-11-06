@@ -28,6 +28,5 @@ export class GithubRepoItemDto {
 }
 export class GithubRepoSearchResponseDto {
   total_count: number;
-  incomplete_results: boolean;
   items: GithubRepoItemDto[];
 }

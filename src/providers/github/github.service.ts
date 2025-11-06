@@ -19,9 +19,17 @@ export class GithubService {
   async searchRepositoriesWithScores(
     searchDto: SearchRepositoriesDto,
   ): Promise<SearchRepositoriesResponseDto> {
-    const params = new URLSearchParams();
     const query = this.buildSearchQuery(searchDto);
+    const params = new URLSearchParams();
     this.buildQuery(params, query, searchDto);
+    const { response, transformedItems } = await this.inqueryGithub(params);
+    return {
+      total_count: response.data.total_count,
+      items: transformedItems,
+    };
+  }
+
+  private async inqueryGithub(params: URLSearchParams) {
     const url = `${this.GITHUB_API_URL}/search/repositories?${params.toString()}`;
 
     const response = await firstValueFrom(
@@ -49,22 +57,38 @@ export class GithubService {
           },
           html_url: item.html_url,
           description: item.description,
-          stargazers_count: item.stargazers_count,
+          stars_count: item.stargazers_count,
           watchers_count: item.watchers_count,
           forks_count: item.forks_count,
           language: item.language,
           created_at: item.created_at,
           updated_at: item.updated_at,
 
-          popularity_score: 0,
+          popularity_score: this.calculatePopularityScore(item),
         } as RepositoryDto;
       },
     );
-    return {
-      total_count: response.data.total_count,
-      incomplete_results: response.data.incomplete_results,
-      items: transformedItems,
-    };
+    return { response, transformedItems };
+  }
+
+  calculatePopularityScore(repository: GithubRepoItemDto): number {
+    // Stars: max 70 points (divide by 100, maximum at 70)
+    const starPoints = Math.min(repository.stargazers_count / 100, 70);
+
+    // Forks: max 20 points (divide by 50, maximum at 20)
+    const forkPoints = Math.min(repository.forks_count / 50, 20);
+
+    // Calculate days since last update
+    const daysSinceUpdate = Math.floor(
+      (Date.now() - new Date(repository.updated_at).getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
+
+    // Recent activity: +10 points if updated in last 30 days
+    const recentBonus = daysSinceUpdate < 30 ? 10 : 0;
+
+    // Total score: max 100 points
+    return Math.round(starPoints + forkPoints + recentBonus);
   }
 
   private buildQuery(
