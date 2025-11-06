@@ -92,6 +92,8 @@ A simple 0-100 score based on:
 
 **Example:** A repo with 10,000 stars, 2,000 forks, updated 10 days ago = 100 + 40 + 10 = **90 points** (capped at 100)
 
+## What's next?
+- Add support for other provider platforms (GitLab, Bitbucket, etc.)
 
 ## License
 
