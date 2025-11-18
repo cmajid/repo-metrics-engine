@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ScoreController } from './score.controller';
-import { GithubService } from 'src/providers/github/github.service';
+import { GithubService } from 'src/providers/github/provider.service';
 import { SearchRepositoriesDto } from './dto/search-repositories.dto';
 import { ResponseDto } from './dto/reponse.dto';
 import { RepositoryDto } from './dto/repository-response.dto'; // Importing RepositoryDto

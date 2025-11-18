@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GithubService } from './github.service';
+import { ProviderService } from './provider.service';
 import { HttpService } from '@nestjs/axios';
 import { SearchRepositoriesDto } from 'src/score/dto/search-repositories.dto';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -8,7 +8,7 @@ import { GithubRepoItemDto } from './dto/github-repsonse.dto';
 import { ScoreCalculator } from 'src/libs/score-calculator';
 
 describe('GithubService', () => {
-    let service: GithubService;
+    let service: ProviderService;
     let httpService: HttpService;
 
     const mockRepository = {
@@ -40,7 +40,7 @@ describe('GithubService', () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                GithubService,
+                ProviderService,
                 {
                     provide: HttpService,
                     useValue: {
@@ -56,7 +56,7 @@ describe('GithubService', () => {
             ],
         }).compile();
 
-        service = module.get<GithubService>(GithubService);
+        service = module.get<ProviderService>(ProviderService);
         httpService = module.get<HttpService>(HttpService);
     });
 
