@@ -120,22 +120,3 @@ export class ProviderService implements RepoProviderService {
     return query;
   }
 }
-
-
-
-
-/*
-
-1. abstract factory 
-2. implemet an interface
-3. all provider services should extentd the interface
-
-
-
-   a. interface scoreRepostiry
-      {
-        searchRepositoriesWithScores(searchDto: SearchRepositoriesDto): Promise<ResponseDto<RepositoryDto[]>>();
-      }
-
-
-*/
