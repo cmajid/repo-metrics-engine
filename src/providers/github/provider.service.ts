@@ -11,9 +11,10 @@ import {
 } from './dto/github-repsonse.dto';
 import { ResponseDto } from 'src/score/dto/reponse.dto';
 import { ScoreCalculator } from 'src/libs/score-calculator';
+import RepoProviderService from '../contracts/repo-provider-service';
 
 @Injectable()
-export class GithubService {
+export class ProviderService implements RepoProviderService {
   private readonly GITHUB_API_URL = 'https://api.github.com';
   constructor(
     private readonly httpService: HttpService,
@@ -23,6 +24,7 @@ export class GithubService {
   async searchRepositoriesWithScores(
     searchDto: SearchRepositoriesDto,
   ): Promise<ResponseDto<RepositoryDto[]>> {
+    
     const query = this.buildSearchQuery(searchDto);
     const params = new URLSearchParams();
     this.buildQuery(params, query, searchDto);

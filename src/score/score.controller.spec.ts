@@ -1,47 +1,43 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ScoreController } from './score.controller';
-import { GithubService } from 'src/providers/github/github.service';
 import { SearchRepositoriesDto } from './dto/search-repositories.dto';
 import { ResponseDto } from './dto/reponse.dto';
-import { RepositoryDto } from './dto/repository-response.dto'; // Importing RepositoryDto
-import { HttpModule, HttpService } from '@nestjs/axios';
-import { ScoreCalculator } from '../libs/score-calculator'; // Correct import for ScoreCalculator
+import { RepositoryDto } from './dto/repository-response.dto';
+import { REPO_PROVIDER_SERVICE } from 'src/providers/contracts/repo-provider-service';
+import type RepoProviderService from 'src/providers/contracts/repo-provider-service';
 
 describe('ScoreController', () => {
   let scoreController: ScoreController;
-  let githubService: GithubService;
+  let repoProviderService: RepoProviderService;
 
   beforeEach(async () => {
+    const mockRepoProviderService: RepoProviderService = {
+      searchRepositoriesWithScores: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ScoreController],
       providers: [
         {
-          provide: GithubService,
-          useFactory: (httpService, scoreCalculator) => new GithubService(httpService, scoreCalculator),
-          inject: [HttpService, ScoreCalculator],
-        },
-        {
-          provide: ScoreCalculator,
-          useFactory: () => new ScoreCalculator(),
-          inject: [],
+          provide: REPO_PROVIDER_SERVICE,
+          useValue: mockRepoProviderService,
         },
       ],
-      imports: [HttpModule], 
     }).compile();
 
     scoreController = module.get<ScoreController>(ScoreController);
-    githubService = module.get<GithubService>(GithubService);
+    repoProviderService = module.get<RepoProviderService>(REPO_PROVIDER_SERVICE);
   });
 
   describe('searchRepositoriesWithScores', () => {
     it('should return a response with repositories', async () => {
-      const searchDto: SearchRepositoriesDto = { q: 'test-query' }; // mock search parameters
-      const result: ResponseDto<RepositoryDto[]> = { total_count: 0, items: [], success: true }; // mock response data
+      const searchDto: SearchRepositoriesDto = { q: 'test-query' };
+      const result: ResponseDto<RepositoryDto[]> = { total_count: 0, items: [], success: true };
 
-      jest.spyOn(githubService, 'searchRepositoriesWithScores').mockResolvedValue(result);
+      jest.spyOn(repoProviderService, 'searchRepositoriesWithScores').mockResolvedValue(result);
 
       expect(await scoreController.searchRepositoriesWithScores(searchDto)).toBe(result);
-      expect(githubService.searchRepositoriesWithScores).toHaveBeenCalledWith(searchDto);
+      expect(repoProviderService.searchRepositoriesWithScores).toHaveBeenCalledWith(searchDto);
     });
   });
 });
